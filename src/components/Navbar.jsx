@@ -1,19 +1,57 @@
+import React from "react";
+import { Navbar, Nav, Container, Dropdown, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useAppContext } from "../store";
 
-export const Navbar = () => {
+const CustomNavbar = () => {
+  const { store, actions } = useAppContext();
 
-	return (
-		<nav className="navbar navbar-light bg-light">
-			<div className="container">
-				<Link to="/">
-					<span className="navbar-brand mb-0 h1">React Boilerplate</span>
-				</Link>
-				<div className="ml-auto">
-					<Link to="/demo">
-						<button className="btn btn-primary">Check the Context in action</button>
-					</Link>
-				</div>
-			</div>
-		</nav>
-	);
+  return (
+    <Navbar
+      expand="lg"
+      bg={store.theme}
+      variant={store.theme}
+      className="mb-4 shadow-sm"
+    >
+      <Container>
+        <Navbar.Brand as={Link} to="/" className="fw-bold">
+          StarWars Blog
+        </Navbar.Brand>
+        <Nav className="ms-auto d-flex align-items-center gap-2">
+          <Dropdown align="end">
+            <Dropdown.Toggle variant={store.theme === "dark" ? "secondary" : "outline-secondary"}>
+              Favoritos ({store.favorites.length})
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              {store.favorites.length === 0 ? (
+                <Dropdown.Item disabled>No hay favoritos</Dropdown.Item>
+              ) : (
+                store.favorites.map((fav, idx) => (
+                  <Dropdown.Item key={idx} className="d-flex justify-content-between align-items-center">
+                    <span>{fav.name}</span>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      onClick={() => actions.removeFavorite(fav)}
+                    >
+                      ✕
+                    </Button>
+                  </Dropdown.Item>
+                ))
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
+
+          <Button
+            variant={store.theme === "dark" ? "light" : "dark"}
+            onClick={actions.toggleTheme}
+          >
+            {store.theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
+          </Button>
+        </Nav>
+      </Container>
+    </Navbar>
+  );
 };
+
+export default CustomNavbar;
