@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Button } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../store";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { getImageUrl } from "../utils/getCustomImage";
 
 const CardItem = ({ item, type }) => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ const CardItem = ({ item, type }) => {
     store: { favorites, theme },
     actions: { addFavorite, removeFavorite },
   } = useAppContext();
+
+  const [imageUrl, setImageUrl] = useState("");
 
   const isFavorite = favorites.some((fav) => fav.url === item.url);
 
@@ -22,9 +25,11 @@ const CardItem = ({ item, type }) => {
     return parts[parts.length - 1] || parts[parts.length - 2];
   };
 
-  const correctedType = type === "people" ? "characters" : type;
   const id = getIdFromUrl(item.url);
-  const imageUrl = `https://starwars-visualguide.com/assets/img/${correctedType}/${id}.jpg`;
+
+  useEffect(() => {
+    getImageUrl(type, id).then(setImageUrl);
+  }, [type, id]);
 
   return (
     <Card className={`h-100 shadow-sm ${theme === "dark" ? "bg-dark text-light" : ""}`}>
@@ -41,7 +46,7 @@ const CardItem = ({ item, type }) => {
             variant={theme === "dark" ? "outline-light" : "outline-dark"}
             onClick={() => navigate(`/${type}/${id}`)}
           >
-            Saber mas...
+            Saber más...
           </Button>
           <Button
             variant="link"

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Spinner, Container } from "react-bootstrap";
 import { useAppContext } from "../store";
+import { getImageUrl } from "../utils/getCustomImage"; 
 
 const Details = () => {
   const { type, id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imageUrl, setImageUrl] = useState("");
   const {
     store: { theme },
   } = useAppContext();
@@ -23,13 +25,10 @@ const Details = () => {
         setLoading(false);
       }
     };
-    fetchData();
-  }, [type, id]);
 
-  const getImageUrl = (type, id) => {
-    const correctedType = type === "people" ? "characters" : type;
-    return `https://starwars-visualguide.com/assets/img/${correctedType}/${id}.jpg`;
-  };
+    fetchData();
+    getImageUrl(type, id).then(setImageUrl);
+  }, [type, id]);
 
   if (loading) {
     return (
@@ -41,17 +40,23 @@ const Details = () => {
     );
   }
 
-  if (!data) return <p className="text-center">No data found</p>;
+  if (!data) return <p className="text-center">No se encontró información.</p>;
 
   return (
-    <Container className={`py-4 d-flex justify-content-center ${theme === "dark" ? "bg-dark text-light" : "bg-light text-dark"}`}>
+    <Container
+      className={`py-4 d-flex justify-content-center ${
+        theme === "dark" ? "bg-dark text-light" : "bg-light text-dark"
+      }`}
+    >
       <Card
         style={{ width: "26rem" }}
-        className={`shadow border-0 animate__animated animate__fadeIn ${theme === "dark" ? "bg-secondary text-light" : "bg-white text-dark"}`}
+        className={`shadow border-0 animate__animated animate__fadeIn ${
+          theme === "dark" ? "bg-secondary text-light" : "bg-white text-dark"
+        }`}
       >
         <Card.Img
           variant="top"
-          src={getImageUrl(type, id)}
+          src={imageUrl}
           onError={(e) => (e.target.src = "/placeholder.jpg")}
         />
         <Card.Body>
@@ -61,7 +66,10 @@ const Details = () => {
           <Card.Text className="animate__animated animate__fadeIn">
             {Object.entries(data.properties).map(([key, value]) => (
               <div key={key} className="mb-1">
-                <strong className="text-capitalize">{key.replace(/_/g, " ")}:</strong> {value}
+                <strong className="text-capitalize">
+                  {key.replace(/_/g, " ")}:
+                </strong>{" "}
+                {value}
               </div>
             ))}
           </Card.Text>

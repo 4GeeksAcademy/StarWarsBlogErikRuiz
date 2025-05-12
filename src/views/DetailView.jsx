@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Container, Row, Col, Card } from "react-bootstrap";
 
 const DetailView = () => {
-  const { type, uid } = useParams(); // ejemplo: type = "people", uid = "1"
+  const { type, uid } = useParams(); 
   const [data, setData] = useState(null);
 
   useEffect(() => {
